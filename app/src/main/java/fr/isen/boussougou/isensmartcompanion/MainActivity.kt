@@ -42,13 +42,7 @@ class MainActivity : ComponentActivity() {
         // Sets the content of the app with a custom theme
         setContent {
             ISENSmartCompanionTheme {
-                // Sets the background color and calls the MainScreen composable function
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    MainScreen()
-                }
+                Navigation()
             }
         }
     }
