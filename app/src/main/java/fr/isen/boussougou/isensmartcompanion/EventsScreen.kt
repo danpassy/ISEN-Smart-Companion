@@ -1,52 +1,79 @@
 package fr.isen.boussougou.isensmartcompanion
 
-import android.content.Intent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
-/**
- * EventsScreen is a composable function that displays the main events page.
- * It includes a title and a button that navigates to the EventDetailActivity.
- *
- * @param navController Controls navigation between screens in a Jetpack Compose app.
- */
 @Composable
-fun EventsScreen(navController: NavHostController) {
-    // Column arranges child elements vertically
+fun EventsScreen(navController: NavController) {
     Column(
-        modifier = Modifier.fillMaxSize(), // Fills the entire screen
-        verticalArrangement = Arrangement.Center, // Centers the content vertically
-        horizontalAlignment = Alignment.CenterHorizontally // Centers the content horizontally
+        modifier = Modifier.fillMaxSize()
     ) {
-        // Display a header text for the screen
         Text(
-            text = "Events Screen", // Title text for the events screen
-            style = MaterialTheme.typography.headlineMedium // Applies a headline text style
+            text = "List of Events",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(16.dp)
         )
-
-        // Adds vertical spacing between the text and the button
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Button that navigates to the EventDetailActivity when clicked
-        Button(
-            onClick = {
-                // Retrieves the current context from the NavHostController
-                val context = navController.context
-
-                // Creates an explicit intent to navigate to EventDetailActivity
-                val intent = Intent(context, EventDetailActivity::class.java)
-
-                // Starts the activity using the intent
-                context.startActivity(intent)
-            }
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // The text inside the button
-            Text(text = "Go to Event Details")
+            items(fakeEvents) { event ->
+                EventItem(event = event, navController = navController)
+            }
+        }
+    }
+}
+
+@Composable
+fun EventItem(event: Event, navController: NavController) {
+    val backgroundColor = if (event.id % 2 == 0) Color(0xFF1FA055) else Color(0xFF35A966)
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp) // Add vertical padding for spacing
+            .clip(RoundedCornerShape(12.dp)) // Clip the card with rounded corners
+            .clickable {
+                navController.navigate("eventDetail/${event.id}")
+            }
+            .background(backgroundColor),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = event.title,
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = event.date,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.8f)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = event.location,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.8f)
+            )
         }
     }
 }
