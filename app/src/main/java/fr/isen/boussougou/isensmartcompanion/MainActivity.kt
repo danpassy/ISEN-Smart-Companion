@@ -1,11 +1,13 @@
 package fr.isen.boussougou.isensmartcompanion
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import fr.isen.boussougou.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,7 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.foundation.background
+
 
 /**
  * MainActivity is the entry point of the app.
@@ -123,6 +126,8 @@ fun BottomInput(
     onQuestionChange: (String) -> Unit,
     onSendClick: () -> Unit
 ) {
+    // Get the current context for displaying the Toast.
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -148,7 +153,10 @@ fun BottomInput(
 
         // Send button with an arrow icon
         IconButton(
-            onClick = onSendClick,
+            onClick = {// Display the Toast and trigger the onSendClick callback.
+            Toast.makeText(context, "Question Submitted", Toast.LENGTH_SHORT).show()
+                    onSendClick()
+            },
             modifier = Modifier.background(color = Color(0xFF03DAC5),
                 shape = RoundedCornerShape(24.dp))
         ) {
