@@ -6,8 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,33 +27,39 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
-
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.launch
+import fr.isen.boussougou.isensmartcompanion.database.AppDatabase
+import fr.isen.boussougou.isensmartcompanion.database.InteractionDao
 
 class MainActivity : ComponentActivity() {
     private lateinit var generativeModel: GenerativeModel
+    private lateinit var database: AppDatabase
+    private lateinit var interactionDao: InteractionDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        database = AppDatabase.getDatabase(this)
+        interactionDao = database.interactionDao()
+
         generativeModel = GenerativeModel(
             modelName = "gemini-2.0-flash",
-            apiKey = "AIzaSyDxdu9bnw2hVBEHgbzED3QOW-gqmRQAUec"
+            apiKey = BuildConfig.GEMINI_API_KEY
         )
 
         enableEdgeToEdge()
 
         setContent {
             ISENSmartCompanionTheme {
-                Navigation(generativeModel)
+                Navigation(generativeModel, interactionDao)
             }
         }
     }
 }
 
 @Composable
-fun MainScreen(generativeModel: GenerativeModel) {
+fun MainScreen(generativeModel: GenerativeModel, interactionDao: InteractionDao) {
     var question by remember { mutableStateOf("") }
     var response by remember { mutableStateOf("AI response will appear here.") }
     val coroutineScope = rememberCoroutineScope()
@@ -67,7 +73,12 @@ fun MainScreen(generativeModel: GenerativeModel) {
                     coroutineScope.launch {
                         try {
                             val result = generativeModel.generateContent(question)
-                            response = result.text ?: "No response generated"
+                            val aiResponse = result.text ?: "No response generated"
+                            response = aiResponse
+
+                            val interaction = fr.isen.boussougou.isensmartcompanion.database.Interaction(question = question, answer = aiResponse)
+                            interactionDao.insertInteraction(interaction)
+
                         } catch (e: Exception) {
                             response = "Error: ${e.message}"
                         }
@@ -122,8 +133,6 @@ fun MainScreen(generativeModel: GenerativeModel) {
     }
 }
 
-
-
 @Composable
 fun BottomInput(
     question: String,
@@ -174,6 +183,6 @@ fun BottomInput(
 @Composable
 fun DefaultPreview() {
     ISENSmartCompanionTheme {
-        MainScreen(GenerativeModel("gemini-2.0-flash", "dummy-api-key"))
+        MainScreen(GenerativeModel("gemini-2.0-flash", "dummy-api-key"), AppDatabase.getDatabase(LocalContext.current).interactionDao())
     }
 }

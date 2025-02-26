@@ -18,6 +18,7 @@ import androidx.navigation.navArgument
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.gson.Gson
 import fr.isen.boussougou.isensmartcompanion.models.Event
+import fr.isen.boussougou.isensmartcompanion.database.InteractionDao
 
 sealed class Screen(val route: String, val icon: ImageVector, val title: String) {
     object Home : Screen("home", Icons.Default.Home, "Home")
@@ -26,7 +27,7 @@ sealed class Screen(val route: String, val icon: ImageVector, val title: String)
 }
 
 @Composable
-fun Navigation(generativeModel: GenerativeModel) {
+fun Navigation(generativeModel: GenerativeModel, interactionDao: InteractionDao) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }
@@ -36,9 +37,9 @@ fun Navigation(generativeModel: GenerativeModel) {
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Home.route) { MainScreen(generativeModel) }
+            composable(Screen.Home.route) { MainScreen(generativeModel, interactionDao) }
             composable(Screen.Events.route) { EventsScreen(navController) }
-            composable(Screen.History.route) { HistoryScreen() }
+            composable(Screen.History.route) { HistoryScreen(interactionDao, navController) }
             composable(
                 route = "eventDetail/{eventJson}",
                 arguments = listOf(navArgument("eventJson") { type = NavType.StringType })
@@ -47,6 +48,14 @@ fun Navigation(generativeModel: GenerativeModel) {
                 val event = Gson().fromJson(eventJson, Event::class.java)
                 event?.let { EventDetailScreen(it) }
             }
+            composable(
+                route = "interactionDetail/{interactionId}",
+                arguments = listOf(navArgument("interactionId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val interactionId = backStackEntry.arguments?.getInt("interactionId") ?: -1
+                InteractionDetailScreen(interactionId, interactionDao, navController)
+            }
+
         }
     }
 }
