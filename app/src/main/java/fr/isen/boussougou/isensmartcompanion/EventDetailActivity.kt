@@ -13,14 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import fr.isen.boussougou.isensmartcompanion.models.Event
 import fr.isen.boussougou.isensmartcompanion.ui.theme.Blue
 import fr.isen.boussougou.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
+import com.google.gson.Gson
 
 class EventDetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val eventId = intent.getIntExtra("eventId", -1)
-        val event = fakeEvents.find { it.id == eventId }
+
+        val eventJson = intent.getStringExtra("event")
+        val event = Gson().fromJson(eventJson, Event::class.java)
 
         setContent {
             ISENSmartCompanionTheme {
@@ -28,7 +31,11 @@ class EventDetailActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    event?.let { EventDetailScreen(it) }
+                    if (event != null) {
+                        EventDetailScreen(event)
+                    } else {
+                        Text("Event not found")
+                    }
                 }
             }
         }
@@ -41,15 +48,15 @@ fun EventDetailScreen(event: Event) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally // Center horizontally
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFFB2B2B2)) // Background color #B2B2B2
+                .background(Color(0xFFB2B2B2))
                 .padding(16.dp),
-            contentAlignment = Alignment.Center // Center content within the Box
+            contentAlignment = Alignment.Center
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -67,13 +74,13 @@ fun EventDetailScreen(event: Event) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Lieu: ${event.location}",
+                    text = "Location: ${event.location}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.secondary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Catégorie: ${event.category}",
+                    text = "Category: ${event.category}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.secondary
                 )
@@ -86,14 +93,14 @@ fun EventDetailScreen(event: Event) {
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp)) // Add space between content and button
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { /*TODO: Handle inscription*/ },
-            modifier = Modifier.wrapContentWidth(), // Adjust button width
+            onClick = { /*TODO: Handle registration*/ },
+            modifier = Modifier.wrapContentWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Blue)
         ) {
-            Text("S'inscrire à l'événement", color = Color.White)
+            Text("Register for the event", color = Color.White)
         }
     }
 }

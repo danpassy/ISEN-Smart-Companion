@@ -1,15 +1,28 @@
 package fr.isen.boussougou.isensmartcompanion
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.gson.Gson
+import fr.isen.boussougou.isensmartcompanion.models.Event
+
+sealed class Screen(val route: String, val icon: ImageVector, val title: String) {
+    object Home : Screen("home", Icons.Default.Home, "Home")
+    object Events : Screen("events", Icons.Default.Event, "Events")
+    object History : Screen("history", Icons.Default.History, "History")
+}
 
 @Composable
 fun Navigation() {
@@ -26,11 +39,11 @@ fun Navigation() {
             composable(Screen.Events.route) { EventsScreen(navController) }
             composable(Screen.History.route) { HistoryScreen() }
             composable(
-                route = "eventDetail/{eventId}",
-                arguments = listOf(navArgument("eventId") { type = NavType.IntType })
+                route = "eventDetail/{eventJson}",
+                arguments = listOf(navArgument("eventJson") { type = NavType.StringType })
             ) { backStackEntry ->
-                val eventId = backStackEntry.arguments?.getInt("eventId") ?: -1
-                val event = fakeEvents.find { it.id == eventId }
+                val eventJson = backStackEntry.arguments?.getString("eventJson")
+                val event = Gson().fromJson(eventJson, Event::class.java)
                 event?.let { EventDetailScreen(it) }
             }
         }
