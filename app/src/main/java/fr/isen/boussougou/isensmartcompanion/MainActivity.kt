@@ -25,55 +25,57 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 
+import com.google.ai.client.generativeai.GenerativeModel
+import kotlinx.coroutines.launch
 
-/**
- * MainActivity is the entry point of the app.
- * This class sets up the main screen using Jetpack Compose
- * and applies the theme and layout.
- */
 class MainActivity : ComponentActivity() {
+    private lateinit var generativeModel: GenerativeModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Enables edge-to-edge drawing for better UI experience
+        generativeModel = GenerativeModel(
+            modelName = "gemini-2.0-flash",
+            apiKey = "AIzaSyDxdu9bnw2hVBEHgbzED3QOW-gqmRQAUec"
+        )
+
         enableEdgeToEdge()
 
-        // Sets the content of the app with a custom theme
         setContent {
             ISENSmartCompanionTheme {
-                Navigation()
+                Navigation(generativeModel)
             }
         }
     }
 }
 
-/**
- * MainScreen is the primary composable that builds the UI.
- * It displays the app title, logo, response area, and input field.
- */
 @Composable
-fun MainScreen() {
-    // State variable to store the user's input question
+fun MainScreen(generativeModel: GenerativeModel) {
     var question by remember { mutableStateOf("") }
-
-    // State variable to display a fake response from the AI
     var response by remember { mutableStateOf("AI response will appear here.") }
+    val coroutineScope = rememberCoroutineScope()
 
-    // Scaffold provides a standard layout structure with a bottom bar
     Scaffold(
         bottomBar = {
             BottomInput(
                 question = question,
                 onQuestionChange = { question = it },
                 onSendClick = {
-                    // Updates the response based on the user’s input
-                    response = "You asked: $question"
+                    coroutineScope.launch {
+                        try {
+                            val result = generativeModel.generateContent(question)
+                            response = result.text ?: "No response generated"
+                        } catch (e: Exception) {
+                            response = "Error: ${e.message}"
+                        }
+                    }
                 }
             )
         }
     ) { innerPadding ->
-        // Main content of the screen
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -85,42 +87,49 @@ fun MainScreen() {
             Text(
                 text = "ISEN Smart Companion",
                 fontSize = 24.sp,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 16.dp),
+                textAlign = TextAlign.Center
             )
 
             // Display the logo of the app
             Image(
                 painter = painterResource(id = R.drawable.isen_logo),
                 contentDescription = "ISEN Logo",
-                modifier = Modifier.size(100.dp) // Customize logo size if needed
+                modifier = Modifier.size(100.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Display the AI response in the center
-            Text(
-                text = response,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
+            // Make the AI response scrollable
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f) // Take up available vertical space
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()), // Enable vertical scrolling
+                contentAlignment = Alignment.TopCenter // Align text to the top of the box
+            ) {
+                Text(
+                    text = response,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
 
-/**
- * BottomInput displays a text input field and a send button.
- *
- * @param question The text input entered by the user.
- * @param onQuestionChange Callback triggered when the text input changes.
- * @param onSendClick Callback triggered when the send button is clicked.
- */
+
+
 @Composable
 fun BottomInput(
     question: String,
     onQuestionChange: (String) -> Unit,
     onSendClick: () -> Unit
 ) {
-    // Get the current context for displaying the Toast.
     val context = LocalContext.current
     Row(
         modifier = Modifier
@@ -129,13 +138,12 @@ fun BottomInput(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Text input field for the user to ask questions
         TextField(
             value = question,
             onValueChange = onQuestionChange,
             modifier = Modifier
                 .weight(1f)
-                .clip(RoundedCornerShape(24.dp)), // Rounded corners
+                .clip(RoundedCornerShape(24.dp)),
             placeholder = { Text("Ask your question...") },
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
@@ -145,11 +153,10 @@ fun BottomInput(
             shape = RoundedCornerShape(24.dp)
         )
 
-        // Send button with an arrow icon
         IconButton(
-            onClick = {// Display the Toast and trigger the onSendClick callback.
-            Toast.makeText(context, "Question Submitted", Toast.LENGTH_SHORT).show()
-                    onSendClick()
+            onClick = {
+                Toast.makeText(context, "Question Submitted", Toast.LENGTH_SHORT).show()
+                onSendClick()
             },
             modifier = Modifier.background(color = Color(0xFF03DAC5),
                 shape = RoundedCornerShape(24.dp))
@@ -157,20 +164,16 @@ fun BottomInput(
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.baseline_arrow_forward_24),
                 contentDescription = "Send",
-                tint = Color.Black // Changement de la couleur de l'icône pour qu'elle soit visible sur le fond teal
+                tint = Color.Black
             )
         }
     }
 }
 
-/**
- * DefaultPreview provides a preview of the MainScreen in Android Studio.
- * This is useful for seeing UI changes without running the app.
- */
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     ISENSmartCompanionTheme {
-        MainScreen()
+        MainScreen(GenerativeModel("gemini-2.0-flash", "dummy-api-key"))
     }
 }

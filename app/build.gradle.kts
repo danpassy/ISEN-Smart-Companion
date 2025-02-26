@@ -16,6 +16,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -61,6 +62,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.material.icons)
     implementation(libs.androidx.material.icons.extended)
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
     // Ajout des dépendances Retrofit et Gson Converter
     implementation(libs.retrofit)

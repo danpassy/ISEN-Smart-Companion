@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.ai.client.generativeai.GenerativeModel
 import com.google.gson.Gson
 import fr.isen.boussougou.isensmartcompanion.models.Event
 
@@ -25,7 +26,7 @@ sealed class Screen(val route: String, val icon: ImageVector, val title: String)
 }
 
 @Composable
-fun Navigation() {
+fun Navigation(generativeModel: GenerativeModel) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }
@@ -35,7 +36,7 @@ fun Navigation() {
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Home.route) { MainScreen() }
+            composable(Screen.Home.route) { MainScreen(generativeModel) }
             composable(Screen.Events.route) { EventsScreen(navController) }
             composable(Screen.History.route) { HistoryScreen() }
             composable(
