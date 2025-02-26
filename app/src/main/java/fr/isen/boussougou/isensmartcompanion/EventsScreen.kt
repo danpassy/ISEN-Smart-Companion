@@ -1,17 +1,15 @@
 package fr.isen.boussougou.isensmartcompanion
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,7 +24,6 @@ fun EventsScreen(navController: NavController) {
     var events by remember { mutableStateOf<List<Event>>(emptyList()) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Fetch events from API when the screen is launched.
     LaunchedEffect(key1 = true) {
         coroutineScope.launch {
             try {
@@ -39,9 +36,8 @@ fun EventsScreen(navController: NavController) {
 
     Column(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally // Center-align content horizontally.
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Centered title at the top of the screen.
         Text(
             text = "List of Events",
             fontSize = 24.sp,
@@ -50,26 +46,20 @@ fun EventsScreen(navController: NavController) {
             color = MaterialTheme.colorScheme.primary
         )
 
-        // LazyColumn to display a scrollable list of events.
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Use itemsIndexed to get both the event and its index.
-            itemsIndexed(events) { index, event ->
-                EventItem(event, navController, index)
+            items(events) { event ->
+                EventItem(event, navController)
             }
         }
     }
 }
 
 @Composable
-fun EventItem(event: Event, navController: NavController, index: Int) {
-    // Alternate background colors based on index (even/odd).
-    val backgroundColor =
-        if (index % 2 == 0) Color(0xFF1FA055) else Color(0xFF35A966)
-
+fun EventItem(event: Event, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -79,7 +69,7 @@ fun EventItem(event: Event, navController: NavController, index: Int) {
                 val eventJson = Gson().toJson(event)
                 navController.navigate("eventDetail/$eventJson")
             },
-        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -87,19 +77,19 @@ fun EventItem(event: Event, navController: NavController, index: Int) {
             Text(
                 text = event.title,
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = event.date,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.8f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = event.location,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.8f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
             )
         }
     }
