@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,11 +32,27 @@ import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.launch
 import fr.isen.boussougou.isensmartcompanion.database.AppDatabase
 import fr.isen.boussougou.isensmartcompanion.database.InteractionDao
+import androidx.core.content.ContextCompat
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+
+import fr.isen.boussougou.isensmartcompanion.utils.NotificationHelper
+
 
 class MainActivity : ComponentActivity() {
     private lateinit var generativeModel: GenerativeModel
     private lateinit var database: AppDatabase
     private lateinit var interactionDao: InteractionDao
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // Permission is granted. Continue the action or workflow in your app.
+            } else {
+                Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,11 +65,32 @@ class MainActivity : ComponentActivity() {
             apiKey = BuildConfig.GEMINI_API_KEY
         )
 
+        NotificationHelper.createNotificationChannel(this)
+        askNotificationPermission()
+
         enableEdgeToEdge()
 
         setContent {
             ISENSmartCompanionTheme {
                 Navigation(generativeModel, interactionDao)
+            }
+        }
+    }
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                // FCM SDK (and your app) can post notifications.
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // TODO: display an educational UI explaining to the user the features that will be enabled
+                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
+                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
+                //       If the user selects "No thanks," allow the user to continue without notifications.
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
     }

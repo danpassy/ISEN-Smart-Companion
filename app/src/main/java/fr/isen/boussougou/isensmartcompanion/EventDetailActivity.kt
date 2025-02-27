@@ -7,7 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,10 +16,20 @@ import androidx.compose.ui.unit.dp
 import fr.isen.boussougou.isensmartcompanion.models.Event
 import fr.isen.boussougou.isensmartcompanion.ui.theme.ISENSmartCompanionTheme
 import com.google.gson.Gson
+import androidx.compose.ui.platform.LocalContext
+import fr.isen.boussougou.isensmartcompanion.utils.EventNotificationPreferencesManager
+import fr.isen.boussougou.isensmartcompanion.utils.NotificationHelper
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.NotificationsOff
+import kotlinx.coroutines.launch
 
 class EventDetailActivity : ComponentActivity() {
+    private lateinit var eventNotificationPreferencesManager: EventNotificationPreferencesManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        eventNotificationPreferencesManager = EventNotificationPreferencesManager(this)
 
         val eventJson = intent.getStringExtra("event")
         val event = Gson().fromJson(eventJson, Event::class.java)
@@ -31,7 +41,7 @@ class EventDetailActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     if (event != null) {
-                        EventDetailScreen(event)
+                        EventDetailScreen(event, eventNotificationPreferencesManager)
                     } else {
                         Text("Event not found", style = MaterialTheme.typography.bodyLarge)
                     }
@@ -42,21 +52,24 @@ class EventDetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun EventDetailScreen(event: Event) {
+fun EventDetailScreen(event: Event, notificationPrefsManager: EventNotificationPreferencesManager) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val isNotificationEnabled = notificationPrefsManager.getEventNotificationPreference(event.id).collectAsState(initial = false)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally // Centrer horizontalement.
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Box pour afficher les détails de l'événement.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant) // Couleur adaptative pour light/dark mode.
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(16.dp),
-            contentAlignment = Alignment.TopCenter // Aligner le contenu en haut.
+            contentAlignment = Alignment.TopCenter
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
@@ -91,21 +104,43 @@ fun EventDetailScreen(event: Event) {
                     text = event.description,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Justify // Justifier la description.
+                    textAlign = TextAlign.Justify
                 )
             }
         }
 
-        // Spacer flexible pour pousser le bouton vers le bas.
         Spacer(modifier = Modifier.weight(1f))
 
-        // Bouton pour s'inscrire à l'événement.
-        Button(
-            onClick = { /* TODO: Handle registration */ },
-            modifier = Modifier.fillMaxWidth(), // Remplir la largeur disponible.
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Register for the event", color = MaterialTheme.colorScheme.onPrimary)
+            Button(
+                onClick = { /* TODO: Handle registration */ },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
+                Text("Register for the event", color = MaterialTheme.colorScheme.onPrimary)
+            }
+
+            IconToggleButton(
+                checked = isNotificationEnabled.value,
+                onCheckedChange = { enabled ->
+                    coroutineScope.launch {
+                        notificationPrefsManager.setEventNotificationPreference(event.id, enabled)
+                        if (enabled) {
+                            NotificationHelper.scheduleNotification(context, event.title, event.description, 10)
+                        } else {
+                            NotificationHelper.cancelNotification(context, event.id.hashCode())
+                        }
+                    }
+                }
+            ) {
+                Icon(
+                    imageVector = if (isNotificationEnabled.value) Icons.Filled.Notifications else Icons.Filled.NotificationsOff,
+                    contentDescription = "Toggle Notifications"
+                )
+            }
         }
     }
 }

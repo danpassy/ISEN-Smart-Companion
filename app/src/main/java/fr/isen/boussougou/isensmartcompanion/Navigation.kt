@@ -7,8 +7,10 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,6 +21,7 @@ import com.google.ai.client.generativeai.GenerativeModel
 import com.google.gson.Gson
 import fr.isen.boussougou.isensmartcompanion.models.Event
 import fr.isen.boussougou.isensmartcompanion.database.InteractionDao
+import fr.isen.boussougou.isensmartcompanion.utils.EventNotificationPreferencesManager
 
 sealed class Screen(val route: String, val icon: ImageVector, val title: String) {
     object Home : Screen("home", Icons.Default.Home, "Home")
@@ -29,6 +32,9 @@ sealed class Screen(val route: String, val icon: ImageVector, val title: String)
 @Composable
 fun Navigation(generativeModel: GenerativeModel, interactionDao: InteractionDao) {
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val notificationPrefsManager = remember { EventNotificationPreferencesManager(context) }
+
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
@@ -46,7 +52,7 @@ fun Navigation(generativeModel: GenerativeModel, interactionDao: InteractionDao)
             ) { backStackEntry ->
                 val eventJson = backStackEntry.arguments?.getString("eventJson")
                 val event = Gson().fromJson(eventJson, Event::class.java)
-                event?.let { EventDetailScreen(it) }
+                event?.let { EventDetailScreen(it, notificationPrefsManager) }
             }
             composable(
                 route = "interactionDetail/{interactionId}",
@@ -55,7 +61,6 @@ fun Navigation(generativeModel: GenerativeModel, interactionDao: InteractionDao)
                 val interactionId = backStackEntry.arguments?.getInt("interactionId") ?: -1
                 InteractionDetailScreen(interactionId, interactionDao, navController)
             }
-
         }
     }
 }

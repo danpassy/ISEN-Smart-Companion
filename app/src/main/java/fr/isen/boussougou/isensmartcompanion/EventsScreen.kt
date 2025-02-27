@@ -19,8 +19,14 @@ import fr.isen.boussougou.isensmartcompanion.models.Event
 import fr.isen.boussougou.isensmartcompanion.network.RetrofitClient
 import kotlinx.coroutines.launch
 
+
+
+
 @Composable
 fun EventsScreen(navController: NavController) {
+
+
+
     var events by remember { mutableStateOf<List<Event>>(emptyList()) }
     val coroutineScope = rememberCoroutineScope()
 
