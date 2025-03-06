@@ -23,33 +23,33 @@ The **ISEN Smart Companion** is a personal assistant application designed to hel
 
 ```
 app/src/main
-├── assets                  # Contains the schedule data used to populate the agenda screen.                     
+   ├── assets                  # Contains the schedule data used to populate the agenda screen.                     
 app/src/main/java/fr/isen/boussougou/isensmartcompanion/
-├── MainActivity.kt         # Home screen with AI assistant
-├── AgendaScreen.kt         # Displays the agenda Allowing users to view their courses and schedules.
-├── EventsScreen.kt         # Displays a list of events
-├── EventDetailActivity.kt  # Shows details of a selected event
-├── HistoryScreen.kt        # Displays the history of AI interactions
-├── models/
-│   └── Event.kt                           # Data model for events
-│   └── Course.kt:                         # Represents course details like subject, teacher, time, location, etc.
-│   └── EventNotificationPrefrences.kt     # Manages notification preferences for events.
-│   └── EventResponse.kt                   # Represents the response structure for events fetched from the web service
-│   └── StudentEvent.kt                    # Represents events added by students to their agenda.
-├── network/
-│   ├── ApiService.kt       # Retrofit service interface
-│   └── RetrofitClient.kt   # Initializes Retrofit instance
-├── database/
-│   ├── InteractionDao.kt   # DAO for Room database
-│   ├── Interaction.kt      # Entity class for Room
-│   └── AppDatabase.kt      # Database instance
-│   └── Converters.kt       # Contains type converters for Room database
-│   └── CourseDao.kt        # DAO for managing courses in Room database.
-│   └── StudentEventDao.kt  # DAO for managing student-added events in Room database.
-└── utils/
-│   └── NotificationHelper.kt                    # Handles notifications
-│   └── EventNotificationPrefrencesManager.kt    # Manages shared preferences for event notifications.
-│   └── NotificationReceiver.kt                  # Broadcast receiver for handling notification actions.
+   ├── MainActivity.kt         # Home screen with AI assistant
+   ├── AgendaScreen.kt         # Displays the agenda Allowing users to view their courses and schedules.
+   ├── EventsScreen.kt         # Displays a list of events
+   ├── EventDetailActivity.kt  # Shows details of a selected event
+   ├── HistoryScreen.kt        # Displays the history of AI interactions
+   ├── models/
+   │   └── Event.kt                           # Data model for events
+   │   └── Course.kt:                         # Represents course details like subject, teacher, time, location, etc.
+   │   └── EventNotificationPrefrences.kt     # Manages notification preferences for events.
+   │   └── EventResponse.kt                   # Represents the response structure for events fetched from the web service
+   │   └── StudentEvent.kt                    # Represents events added by students to their agenda.
+   ├── network/
+   │   ├── ApiService.kt       # Retrofit service interface
+   │   └── RetrofitClient.kt   # Initializes Retrofit instance
+   ├── database/
+   │   ├── InteractionDao.kt   # DAO for Room database
+   │   ├── Interaction.kt      # Entity class for Room
+   │   └── AppDatabase.kt      # Database instance
+   │   └── Converters.kt       # Contains type converters for Room database
+   │   └── CourseDao.kt        # DAO for managing courses in Room database.
+   │   └── StudentEventDao.kt  # DAO for managing student-added events in Room database.
+   └── utils/
+   │   └── NotificationHelper.kt                    # Handles notifications
+   │   └── EventNotificationPrefrencesManager.kt    # Manages shared preferences for event notifications.
+   │   └── NotificationReceiver.kt                  # Broadcast receiver for handling notification actions.
 ```
 
 
