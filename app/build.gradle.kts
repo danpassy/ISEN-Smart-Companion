@@ -25,7 +25,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -50,7 +50,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
@@ -58,16 +57,44 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material.icons.extended)
+    implementation(platform(libs.androidx.compose.bom))
+
+    // Room (Base de données locale)
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")  // For Kotlin extensions and coroutines support
-    // Lifecycle components
+    implementation("androidx.room:room-ktx:2.6.1")
+
+    //Lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
+
+
     implementation("androidx.compose.material:material-icons-extended:<version>")
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    //DataStore for Local store
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    // WorkManager (tâches en arrière-plan)
     implementation("androidx.work:work-runtime-ktx:2.8.1")
+
+    // Gemini API
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
+    implementation ("com.jakewharton.threetenabp:threetenabp:1.4.4")
+
+
+    implementation("androidx.compose.foundation:foundation")
+
+    // Retrofit & Gson pour les appels API
+    implementation(libs.androidx.material.icons)
+    implementation(libs.androidx.material.icons.extended)
+
+    // Ajout des dépendances Retrofit et Gson Converter
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    //Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -75,13 +102,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.androidx.material.icons)
-    implementation(libs.androidx.material.icons.extended)
-    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
-
-
-
-    // Ajout des dépendances Retrofit et Gson Converter
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
 }

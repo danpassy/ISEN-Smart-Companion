@@ -23,13 +23,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.NotificationsOff
 import kotlinx.coroutines.launch
-
+import fr.isen.boussougou.isensmartcompanion.models.StudentEvent
+import fr.isen.boussougou.isensmartcompanion.database.StudentEventDao
+import fr.isen.boussougou.isensmartcompanion.database.AppDatabase
 class EventDetailActivity : ComponentActivity() {
     private lateinit var eventNotificationPreferencesManager: EventNotificationPreferencesManager
+    private lateinit var studentEventDao: StudentEventDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         eventNotificationPreferencesManager = EventNotificationPreferencesManager(this)
+        studentEventDao = AppDatabase.getDatabase(this).studentEventDao()
 
         val eventJson = intent.getStringExtra("event")
         val event = Gson().fromJson(eventJson, Event::class.java)
@@ -41,7 +46,7 @@ class EventDetailActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     if (event != null) {
-                        EventDetailScreen(event, eventNotificationPreferencesManager)
+                        EventDetailScreen(event, eventNotificationPreferencesManager, studentEventDao)
                     } else {
                         Text("Event not found", style = MaterialTheme.typography.bodyLarge)
                     }
@@ -52,20 +57,22 @@ class EventDetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun EventDetailScreen(event: Event, notificationPrefsManager: EventNotificationPreferencesManager) {
+fun EventDetailScreen(
+    event: Event,
+    notificationPrefsManager: EventNotificationPreferencesManager,
+    studentEventDao: StudentEventDao
+) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val isNotificationEnabled = notificationPrefsManager.getEventNotificationPreference(event.id).collectAsState(initial = false)
+    var isEventAdded by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(16.dp),
@@ -117,10 +124,23 @@ fun EventDetailScreen(event: Event, notificationPrefsManager: EventNotificationP
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
-                onClick = { /* TODO: Handle registration */ },
+                onClick = {
+                    // Ajouter l'événement à l'agenda étudiant dans Room Database.
+                    val studentEvent = StudentEvent(
+                        eventId = event.id,
+                        eventName = event.title,
+                        eventDate = event.date,
+                        eventLocation = event.location
+                    )
+
+                    coroutineScope.launch {
+                        studentEventDao.insertStudentEvent(studentEvent)
+                        isEventAdded = true // Mettre à jour l'état pour afficher le message de confirmation.
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("Register for the event", color = MaterialTheme.colorScheme.onPrimary)
+                Text("Add to Agenda", color = MaterialTheme.colorScheme.onPrimary)
             }
 
             IconToggleButton(
@@ -137,10 +157,17 @@ fun EventDetailScreen(event: Event, notificationPrefsManager: EventNotificationP
                 }
             ) {
                 Icon(
-                    imageVector = if (isNotificationEnabled.value) Icons.Filled.Notifications else Icons.Filled.NotificationsOff,
-                    contentDescription = "Toggle Notifications"
+                    imageVector =
+                    if (isNotificationEnabled.value) Icons.Filled.Notifications else Icons.Filled.NotificationsOff,
+                    contentDescription =
+                    if (isNotificationEnabled.value) "Disable Notifications" else "Enable Notifications"
                 )
             }
+        }
+
+        if (isEventAdded) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Event added to agenda!", color = MaterialTheme.colorScheme.primary)
         }
     }
 }

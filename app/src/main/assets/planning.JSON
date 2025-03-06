@@ -1,0 +1,32 @@
+{
+  "weeks": [
+    {
+      "week": "10",
+      "start_date": "03/03/2025",
+      "end_date": "09/03/2025",
+      "schedule": [
+        {"day": "Monday", "time": "08:00 - 12:00", "subject": "S\u00e9curit\u00e9 Hardware", "teacher": "Julien FRANCQ", "location": "319", "type": "Cours magistral", "duration": "04h00"},
+        {"day": "Monday", "time": "14:00 - 18:00", "subject": "S\u00e9curit\u00e9 Hardware", "teacher": "Julien FRANCQ", "location": "319", "type": "Cours magistral", "duration": "04h00"},
+        {"day": "Tuesday", "time": "10:00 - 12:00", "subject": "Langues", "teacher": "Caroline HOWSON"},
+        {"day": "Tuesday", "time": "14:00 - 17:30", "subject": "SHES_Fresque du num\u00e9rique", "teacher": "Ana\u00efs GALLIGANI", "location": "511", "type": "Cours magistral", "duration": "03h30"},
+        {"day": "Wednesday", "time": "08:00 - 12:00", "subject": "Projets", "teacher": "Thomas DANDELOT", "location": "317 (BigDATA)", "type": "Projet", "duration": "04h00"},
+        {"day": "Thursday", "time": "08:00 - 12:00", "subject": "Projets", "location": "510 (Option Cyber)", "type": "Projet", "duration": "04h00"}
+      ]
+    },
+    {
+      "week": "11",
+      "start_date": "10/03/2025",
+      "end_date": "16/03/2025",
+      "schedule": [
+        {"day": "Monday", "time": "08:00 - 12:00", "subject": "Informatique - Langage", "teacher": "Marc MOLLINARI", "location": "319", "type": "Cours magistral", "duration": "04h00"},
+        {"day": "Monday", "time": "14:00 - 18:00", "subject": "Informatique - Langage", "teacher": "Marc MOLLINARI", "location": "319", "type": "Cours magistral", "duration": "04h00"},
+        {"day": "Tuesday", "time": "10:00 - 12:00", "subject": "Langues", "teacher": "Caroline HOWSON"},
+        {"day": "Tuesday", "time": "14:00 - 18:00", "subject": "SHES_Fresque du num\u00e9rique", "teacher": "Guillaume PEROCHEAU", "location": "511", "type": "Cours magistral", "duration": "04h00"},
+        {"day": "Wednesday", "time": "08:00 - 12:00", "subject": "Projets", "teacher": "Alain LOUSSERT", "location": "Le Mourillon (labo IOT)", "type": "Projet", "duration": "04h00"},
+        {"day": "Thursday", "time": "08:00 - 12:00", "subject": "Informatique - Langage", "teacher": "Marc MOLLINARI", "location": "319", "type": "Cours magistral", "duration": "04h00"},
+        {"day": "Thursday", "time": "14:00 - 18:00", "subject": "Informatique - Langage", "teacher": "Marc MOLLINARI", "location": "319", "type": "Cours magistral", "duration": "04h00"}
+      ]
+    }
+  ]
+}
+

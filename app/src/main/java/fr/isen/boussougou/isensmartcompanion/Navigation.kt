@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -22,15 +23,23 @@ import com.google.gson.Gson
 import fr.isen.boussougou.isensmartcompanion.models.Event
 import fr.isen.boussougou.isensmartcompanion.database.InteractionDao
 import fr.isen.boussougou.isensmartcompanion.utils.EventNotificationPreferencesManager
+import fr.isen.boussougou.isensmartcompanion.database.CourseDao
+import fr.isen.boussougou.isensmartcompanion.database.StudentEventDao
 
 sealed class Screen(val route: String, val icon: ImageVector, val title: String) {
     object Home : Screen("home", Icons.Default.Home, "Home")
     object Events : Screen("events", Icons.Default.Event, "Events")
     object History : Screen("history", Icons.Default.History, "History")
+    object Agenda : Screen("agenda", Icons.Filled.CalendarMonth, "Agenda")
 }
 
 @Composable
-fun Navigation(generativeModel: GenerativeModel, interactionDao: InteractionDao) {
+fun Navigation(
+    generativeModel: GenerativeModel,
+    interactionDao: InteractionDao,
+    courseDao: CourseDao,
+    studentEventDao: StudentEventDao
+) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val notificationPrefsManager = remember { EventNotificationPreferencesManager(context) }
@@ -52,7 +61,7 @@ fun Navigation(generativeModel: GenerativeModel, interactionDao: InteractionDao)
             ) { backStackEntry ->
                 val eventJson = backStackEntry.arguments?.getString("eventJson")
                 val event = Gson().fromJson(eventJson, Event::class.java)
-                event?.let { EventDetailScreen(it, notificationPrefsManager) }
+                event?.let { EventDetailScreen(it, notificationPrefsManager, studentEventDao) }
             }
             composable(
                 route = "interactionDetail/{interactionId}",
@@ -61,6 +70,7 @@ fun Navigation(generativeModel: GenerativeModel, interactionDao: InteractionDao)
                 val interactionId = backStackEntry.arguments?.getInt("interactionId") ?: -1
                 InteractionDetailScreen(interactionId, interactionDao, navController)
             }
+            composable(Screen.Agenda.route) { AgendaScreen(courseDao = courseDao) }
         }
     }
 }
@@ -85,6 +95,12 @@ fun BottomNavigationBar(navController: NavHostController) {
             label = { Text(Screen.History.title) },
             selected = navController.currentDestination?.route == Screen.History.route,
             onClick = { navController.navigate(Screen.History.route) }
+        )
+        NavigationBarItem(
+            icon = { Icon(Screen.Agenda.icon, contentDescription = null) },
+            label = { Text(Screen.Agenda.title) },
+            selected = navController.currentDestination?.route == Screen.Agenda.route,
+            onClick = { navController.navigate(Screen.Agenda.route) }
         )
     }
 }
