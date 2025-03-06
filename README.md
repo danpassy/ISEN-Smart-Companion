@@ -95,6 +95,17 @@ app/src/main/java/fr/isen/boussougou/isensmartcompanion/
 - Use **Room Database** to save and display chat history.
 - Implement notifications for pinned events.
 
+## 📂  Release
+
+You can download a sample of the APK file from:  
+ `app/release/app-release.apk`  
+
+To install the APK on your Android device:  
+1. Transfer the APK file to your phone.  
+2. Enable "Install from unknown sources" in your device settings if required.  
+3. Open the file and follow the installation instructions.  
+
+⚠️ **Note:** This is a sample release and may not represent the final version of the application.  
 
 ## 📚 Resources
 
