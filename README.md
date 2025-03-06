@@ -47,7 +47,7 @@ app/src/main/java/fr/isen/boussougou/isensmartcompanion/
 │   └── CourseDao.kt        # DAO for managing courses in Room database.
 │   └── StudentEventDao.kt  # DAO for managing student-added events in Room database.
 └── utils/
-    └── NotificationHelper.kt                    # Handles notifications
+│   └── NotificationHelper.kt                    # Handles notifications
 │   └── EventNotificationPrefrencesManager.kt    # Manages shared preferences for event notifications.
 │   └── NotificationReceiver.kt                  # Broadcast receiver for handling notification actions.
 ```
