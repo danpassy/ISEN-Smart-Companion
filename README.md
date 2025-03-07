@@ -94,6 +94,17 @@ app/src/main/java/fr/isen/boussougou/isensmartcompanion/
 ### Part IV: Local Storage & Notifications
 - Use **Room Database** to save and display chat history.
 - Implement notifications for pinned events.
+art V: Application Customization
+
+### Part V: art V: Application Customization
+
+- Calendar Integration: to visualize not only upcoming events but also their personal schedules
+- Dark/Light Mode Toggle: A theme toggle button has been added, enabling users to switch between Dark Mode and Light Mode 
+
+## ScreenShots
+
+You can have sample of the on the root of this repository on ScreenShots directory
+
 
 ## 📂  Release
 
