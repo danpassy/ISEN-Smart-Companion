@@ -26,64 +26,84 @@ import fr.isen.boussougou.isensmartcompanion.database.InteractionDao
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import fr.isen.boussougou.isensmartcompanion.utils.ThemePreferences
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HistoryScreen(interactionDao: InteractionDao, navController: NavController) {
-    val interactionsFlow = interactionDao.getAllInteractions()
-    val interactions by interactionsFlow.collectAsState(initial = emptyList())
-    var selectedItems by remember { mutableStateOf(setOf<Int>()) }
+fun HistoryScreen(
+    interactionDao: InteractionDao,
+    navController: NavController,
+    themePreferences: ThemePreferences
+) {
     val coroutineScope = rememberCoroutineScope()
+    val interactions by interactionDao.getAllInteractions().collectAsState(initial = emptyList())
+    var selectedItems by remember { mutableStateOf(setOf<Int>()) }
+    val isDarkMode = themePreferences.getTheme().collectAsState(initial = false)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Interaction History",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .align(Alignment.CenterHorizontally)
-        )
-
-        if (selectedItems.isNotEmpty()) {
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        interactionDao.deleteInteractions(selectedItems.toList())
-                        selectedItems = emptySet()
-                    }
-                },
-                modifier = Modifier.align(Alignment.End)
-            ) {
-                Text("Delete Selected")
-            }
-        }
-
-        if (interactions.isEmpty()) {
-            Text(
-                text = "No history available",
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
-        } else {
-            LazyColumn {
-                items(interactions) { interaction ->
-                    InteractionItem(
-                        interaction = interaction,
-                        navController = navController,
-                        isSelected = selectedItems.contains(interaction.id),
-                        onSelectionChanged = { isSelected ->
-                            selectedItems = if (isSelected) {
-                                selectedItems + interaction.id
-                            } else {
-                                selectedItems - interaction.id
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Interaction History") },
+                actions = {
+                    Switch(
+                        checked = isDarkMode.value,
+                        onCheckedChange = { darkMode ->
+                            coroutineScope.launch {
+                                themePreferences.saveTheme(darkMode)
                             }
                         }
                     )
+                }
+            )
+        },
+        floatingActionButton = {
+            if (selectedItems.isNotEmpty()) {
+                FloatingActionButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            interactionDao.deleteInteractions(selectedItems.toList())
+                            selectedItems = emptySet()
+                        }
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary
+                ) {
+                    Text("Delete")
+                }
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+            if (interactions.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "No history available",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(interactions) { interaction ->
+                        InteractionItem(
+                            interaction,
+                            navController,
+                            isSelected = selectedItems.contains(interaction.id),
+                            onSelectionChanged = { isSelected ->
+                                selectedItems =
+                                    if (isSelected) selectedItems + interaction.id else selectedItems - interaction.id
+                            }
+                        )
+                    }
                 }
             }
         }

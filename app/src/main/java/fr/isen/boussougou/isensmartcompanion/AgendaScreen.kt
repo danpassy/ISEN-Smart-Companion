@@ -15,41 +15,56 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.UUID
 import androidx.compose.ui.platform.LocalContext
+import fr.isen.boussougou.isensmartcompanion.utils.ThemePreferences
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AgendaScreen(courseDao: CourseDao) {
+fun AgendaScreen(courseDao: CourseDao, themePreferences: ThemePreferences) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val courses = courseDao.getAllCourses().collectAsState(initial = emptyList())
+    val isDarkMode = themePreferences.getTheme().collectAsState(initial = false)
 
-    // Load courses from JSON when the screen is launched
     LaunchedEffect(key1 = true) {
         coroutineScope.launch {
             loadCoursesFromJson(context, courseDao)
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text(
-            text = "Agenda Screen",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(16.dp),
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        if (courses.value.isEmpty()) {
-            Text(
-                text = "No courses available. Loading...",
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                modifier = Modifier.padding(16.dp)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Agenda",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                },
+                actions = {
+                    Switch(
+                        checked = isDarkMode.value,
+                        onCheckedChange = { darkMode ->
+                            coroutineScope.launch { themePreferences.saveTheme(darkMode) }
+                        }
+                    )
+                }
             )
-        } else {
-            LazyColumn {
-                items(courses.value) { course ->
-                    CourseItem(course = course)
+        }
+    ) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding)) {
+            if (courses.value.isEmpty()) {
+                Text(
+                    text = "No courses available. Loading...",
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else {
+                LazyColumn {
+                    items(courses.value) { course ->
+                        CourseItem(course)
+                    }
                 }
             }
         }

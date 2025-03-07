@@ -25,6 +25,7 @@ import fr.isen.boussougou.isensmartcompanion.database.InteractionDao
 import fr.isen.boussougou.isensmartcompanion.utils.EventNotificationPreferencesManager
 import fr.isen.boussougou.isensmartcompanion.database.CourseDao
 import fr.isen.boussougou.isensmartcompanion.database.StudentEventDao
+import fr.isen.boussougou.isensmartcompanion.utils.ThemePreferences
 
 sealed class Screen(val route: String, val icon: ImageVector, val title: String) {
     object Home : Screen("home", Icons.Default.Home, "Home")
@@ -38,7 +39,8 @@ fun Navigation(
     generativeModel: GenerativeModel,
     interactionDao: InteractionDao,
     courseDao: CourseDao,
-    studentEventDao: StudentEventDao
+    studentEventDao: StudentEventDao,
+    themePreferences: ThemePreferences
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -52,9 +54,10 @@ fun Navigation(
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Home.route) { MainScreen(generativeModel, interactionDao) }
-            composable(Screen.Events.route) { EventsScreen(navController) }
-            composable(Screen.History.route) { HistoryScreen(interactionDao, navController) }
+            composable(Screen.Home.route) { MainScreen(generativeModel, interactionDao, themePreferences) }
+            composable(Screen.Events.route) { EventsScreen(navController, themePreferences) }
+            composable(Screen.History.route) { HistoryScreen(interactionDao, navController, themePreferences) }
+            composable(Screen.Agenda.route) { AgendaScreen(courseDao, themePreferences) }
             composable(
                 route = "eventDetail/{eventJson}",
                 arguments = listOf(navArgument("eventJson") { type = NavType.StringType })
@@ -70,7 +73,7 @@ fun Navigation(
                 val interactionId = backStackEntry.arguments?.getInt("interactionId") ?: -1
                 InteractionDetailScreen(interactionId, interactionDao, navController)
             }
-            composable(Screen.Agenda.route) { AgendaScreen(courseDao = courseDao) }
+            composable(Screen.Agenda.route) { AgendaScreen(courseDao = courseDao,themePreferences) }
         }
     }
 }
