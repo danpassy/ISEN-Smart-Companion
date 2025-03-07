@@ -50,6 +50,8 @@ app/src/main/java/fr/isen/boussougou/isensmartcompanion/
    │   └── NotificationHelper.kt                    # Handles notifications
    │   └── EventNotificationPrefrencesManager.kt    # Manages shared preferences for event notifications.
    │   └── NotificationReceiver.kt                  # Broadcast receiver for handling notification actions.
+   │   └── ThemePreference.kt                       # Hnadls Dark and light mode
+
 ```
 
 
