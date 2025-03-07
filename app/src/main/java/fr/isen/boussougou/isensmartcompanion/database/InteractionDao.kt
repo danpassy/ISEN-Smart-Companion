@@ -3,6 +3,8 @@ package fr.isen.boussougou.isensmartcompanion.database
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
+
+// DAO permettant d'accéder aux interactions utilisateur-IA stockées localement.
 @Dao
 interface InteractionDao {
     @Query("SELECT * FROM interactions ORDER BY timestamp DESC")

@@ -4,6 +4,7 @@ import androidx.room.*
 import fr.isen.boussougou.isensmartcompanion.models.StudentEvent
 import kotlinx.coroutines.flow.Flow
 
+// DAO permettant d'accéder aux événements ajoutés par les étudiants dans la base locale.
 @Dao
 interface StudentEventDao {
     @Query("SELECT * FROM student_events")

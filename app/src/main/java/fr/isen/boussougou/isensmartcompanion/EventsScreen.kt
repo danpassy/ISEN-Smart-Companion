@@ -24,7 +24,11 @@ import fr.isen.boussougou.isensmartcompanion.utils.ThemePreferences
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventsScreen(navController: NavController, themePreferences: ThemePreferences) {
-
+    /*
+   Displays list of events fetched from web service:
+   - Allows navigation to detailed view on click.
+   - Provides a switch to toggle between dark and light themes.
+   */
 
     var events by remember { mutableStateOf<List<Event>>(emptyList()) }
     val coroutineScope = rememberCoroutineScope()

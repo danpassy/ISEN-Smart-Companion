@@ -3,6 +3,7 @@ package fr.isen.boussougou.isensmartcompanion.database
 import androidx.room.TypeConverter
 import java.util.Date
 
+// Convertisseurs permettant à Room de stocker des types complexes comme Date dans la base locale.
 class Converters {
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {

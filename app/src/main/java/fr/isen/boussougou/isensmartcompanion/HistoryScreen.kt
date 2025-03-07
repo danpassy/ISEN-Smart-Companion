@@ -35,6 +35,12 @@ fun HistoryScreen(
     navController: NavController,
     themePreferences: ThemePreferences
 ) {
+    /*
+   Displays history of interactions with AI assistant:
+   - Allows selection and deletion of interactions.
+   - Provides switch to toggle between dark and light themes.
+   */
+
     val coroutineScope = rememberCoroutineScope()
     val interactions by interactionDao.getAllInteractions().collectAsState(initial = emptyList())
     var selectedItems by remember { mutableStateOf(setOf<Int>()) }

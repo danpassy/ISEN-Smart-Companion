@@ -49,6 +49,12 @@ import fr.isen.boussougou.isensmartcompanion.utils.ThemePreferences
 
 
 class MainActivity : ComponentActivity() {
+    /*
+ Main entry point for app:
+ - Initializes database instances and generative AI model.
+ - Requests notification permission if required.
+ - Sets up global theme preference management.
+ */
     private lateinit var generativeModel: GenerativeModel
     private lateinit var database: AppDatabase
     private lateinit var interactionDao: InteractionDao
@@ -123,6 +129,11 @@ fun MainScreen(
     interactionDao: InteractionDao,
     themePreferences: ThemePreferences
 ) {
+    /*Home screen composable:
+    - Provides input field to ask questions to AI assistant.
+    - Displays AI-generated responses in scrollable area.
+    - Allows switching between dark and light themes via top bar switch.
+    */
     var question by remember { mutableStateOf("") }
     var response by remember { mutableStateOf("AI response will appear here.") }
     val coroutineScope = rememberCoroutineScope()

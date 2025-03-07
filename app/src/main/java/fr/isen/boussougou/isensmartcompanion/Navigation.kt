@@ -42,6 +42,11 @@ fun Navigation(
     studentEventDao: StudentEventDao,
     themePreferences: ThemePreferences
 ) {
+    /*
+Manages navigation between different screens using Jetpack Compose Navigation:
+- Defines navigation routes for Home, Events, History and Agenda screens clearly.
+- Passes necessary dependencies (database DAOs and theme preferences) to each screen composable explicitly.
+*/
     val navController = rememberNavController()
     val context = LocalContext.current
     val notificationPrefsManager = remember { EventNotificationPreferencesManager(context) }
@@ -80,6 +85,12 @@ fun Navigation(
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
+    /*
+ Bottom navigation bar component:
+ - Provides easy navigation between main sections (Home, Events, History & Agenda).
+ - Highlights currently selected item clearly for better user experience.
+ */
+
     NavigationBar {
         NavigationBarItem(
             icon = { Icon(Screen.Home.icon, contentDescription = null) },

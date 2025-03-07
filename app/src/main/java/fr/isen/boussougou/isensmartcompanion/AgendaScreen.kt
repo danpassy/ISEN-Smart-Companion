@@ -20,6 +20,12 @@ import fr.isen.boussougou.isensmartcompanion.utils.ThemePreferences
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AgendaScreen(courseDao: CourseDao, themePreferences: ThemePreferences) {
+    /*
+   Displays user's agenda screen:
+   - Loads courses from JSON into database on launch.
+   - Shows list of courses if available.
+   - Allows switching between dark and light themes.
+   */
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val courses = courseDao.getAllCourses().collectAsState(initial = emptyList())

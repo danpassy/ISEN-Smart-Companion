@@ -26,7 +26,16 @@ import kotlinx.coroutines.launch
 import fr.isen.boussougou.isensmartcompanion.models.StudentEvent
 import fr.isen.boussougou.isensmartcompanion.database.StudentEventDao
 import fr.isen.boussougou.isensmartcompanion.database.AppDatabase
+
+
 class EventDetailActivity : ComponentActivity() {
+    /*
+    Activity displaying detailed information about selected events:
+    - Allows users to add events to their personal agenda stored locally in Room database.
+    - Manages notification preferences for each event (enable/disable notifications).
+    */
+
+
     private lateinit var eventNotificationPreferencesManager: EventNotificationPreferencesManager
     private lateinit var studentEventDao: StudentEventDao
 
