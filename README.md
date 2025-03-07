@@ -101,9 +101,10 @@ art V: Application Customization
 - Calendar Integration: to visualize not only upcoming events but also their personal schedules
 - Dark/Light Mode Toggle: A theme toggle button has been added, enabling users to switch between Dark Mode and Light Mode 
 
-## ScreenShots
+## 📷 Screenshots
 
-You can have sample of the on the root of this repository on ScreenShots directory
+You can find sample screenshots in the `Screenshots` directory at the root of this repository.
+
 
 
 ## 📂  Release
